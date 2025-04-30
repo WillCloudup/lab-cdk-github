@@ -1,4 +1,4 @@
-name: Python application
+name: Deploy AWS Infrastructure using CDK
 
 on:
   push:
@@ -20,12 +20,18 @@ jobs:
         pip install --upgrade pip  # Asegurarse de tener la última versión de pip
         pip install -r requirements.txt  # Instalar dependencias
 
-    - name: Verify pytest installation
+    - name: Install AWS CDK
       run: |
-        source .venv/bin/activate  # Activar entorno virtual
-        pip show pytest  # Verificar que pytest esté instalado
+        npm install -g aws-cdk  # Instalar CDK globalmente
 
-    - name: Run tests
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # O el que sea necesario
+
+    - name: Deploy infrastructure using CDK
       run: |
         source .venv/bin/activate  # Activar entorno virtual
-        pytest  # Ejecutar las pruebas
+        cdk deploy --require-approval never  # Desplegar la infraestructura en AWS
