@@ -8,4 +8,4 @@ app = cdk.App()
 LabCdkGithubStack(app, "LabCdkGithubStack")
 
 app.synth()
-#test to user
+#test to user to lab cdk-github
