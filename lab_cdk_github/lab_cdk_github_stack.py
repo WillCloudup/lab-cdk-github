@@ -9,13 +9,33 @@ class LabCdkGithubStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # Crear un bucket S3
-        bucket = s3.Bucket(self, "MyBucket")
+        # Crear un bucket S3 con un nombre personalizado
+        bucket = s3.Bucket(
+            self,
+            "MyBucket",
+            bucket_name="mi-bucket-lab-cdk-github",
+            versioned=True,
+            removal_policy=cdk.RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
+            lifecycle_rules=[
+                s3.LifecycleRule(
+                    expiration=cdk.Duration.days(30),
+                    noncurrent_version_expiration=cdk.Duration.days(30)
+                )
+            ]
+        )
 
         # Crear una función Lambda simple
         function = _lambda.Function(
             self,
             "MyLambdaFunction",
+            function_name="lambda-lab-cdk-github",
+            description="Lambda function for lab-cdk-github",
+            memory_size=128,
+            timeout=cdk.Duration.seconds(10),
+            environment={
+                "BUCKET_NAME": bucket.bucket_name
+            },
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler="index.handler",
             code=_lambda.Code.from_inline(
