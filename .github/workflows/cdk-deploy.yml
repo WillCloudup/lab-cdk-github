@@ -25,9 +25,9 @@ jobs:
       # Paso 3: Instalar dependencias de Python
       - name: Install Python dependencies
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install -r requirements.txt
+            python -m venv .venv
+            source .venv/bin/activate
+            pip install -r requirements.txt
 
       # Paso 4: Instalar AWS CDK CLI
       - name: Install AWS CDK
@@ -36,8 +36,8 @@ jobs:
       # Paso 5: Ejecutar pruebas
       - name: Run tests
         run: |
-          source .venv/bin/activate
-          pytest
+            source .venv/bin/activate
+            pytest
 
       # Paso 6: Sintetizar la infraestructura con CDK
       - name: Synthesize CDK
