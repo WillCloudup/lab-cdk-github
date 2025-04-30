@@ -1,6 +1,16 @@
-name: Deploy AWS Infrastructure using CDK
+name: Deploy or Destroy AWS Infrastructure using CDK
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Choose the action to perform: deploy or destroy"
+        required: true
+        default: "deploy"
+        type: choice
+        options:
+          - deploy
+          - destroy
 
 jobs:
   build:
@@ -28,7 +38,16 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Deploy infrastructure using CDK
+    - name: Execute CDK Action
       run: |
         source .venv/bin/activate  # Activar entorno virtual
-        cdk deploy --require-approval never  # Desplegar la infraestructura en AWS
+        if [ "${{ github.event.inputs.action }}" == "deploy" ]; then
+          echo "Deploying infrastructure..."
+          cdk deploy --require-approval never  # Desplegar la infraestructura
+        elif [ "${{ github.event.inputs.action }}" == "destroy" ]; then
+          echo "Destroying infrastructure..."
+          cdk destroy --force  # Destruir la infraestructura sin confirmación
+        else
+          echo "Invalid action: ${{ github.event.inputs.action }}"
+          exit 1
+        fi
